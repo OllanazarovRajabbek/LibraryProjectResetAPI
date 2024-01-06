@@ -1,0 +1,27 @@
+### Create book
+POST localhost:8080/book/create
+Content-Type: application/json
+
+{
+  "title": "Iymon",
+  "author": "Shayx Muhammad Sodiq Muhammad Yusuf"
+
+}
+
+### Get book list
+GET localhost:8080/book/all
+
+### Get student Id
+GET localhost:8080/book/0ccf54bd-0080-461b-955f-3100245b7156
+
+### Update book
+PUT localhost:8080/book/update/263c9495-4626-4f62-b0dd-09a0e56c53bc
+Content-Type: application/json
+
+{
+  "title": "Otgan kunlar",
+  "author": "Otkir Hoshimov"
+}
+
+### Delete book
+DELETE localhost:8080/book/delete/4d831210-05b9-46bc-b849-315ae70777ae

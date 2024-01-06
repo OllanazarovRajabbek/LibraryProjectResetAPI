@@ -1,0 +1,28 @@
+### Create Student
+POST localhost:8080/student/create
+Content-Type: application/json
+
+{
+  "name": "Anvar",
+  "surname": "Ravshanov",
+  "phone": "5555555"
+}
+
+### Get student All
+GET localhost:8080/student/all
+
+### Get student Id
+GET localhost:8080/student/7df0ce79-1462-4d15-94cf-d88e623cfb3c
+
+### Update student Id
+PUT localhost:8080/student/update/0c7624a4-da68-429f-86b8-410dec01b184
+Content-Type: application/json
+
+{
+  "name": "AAAA",
+  "surname": "BBBB",
+  "phone": "1111111"
+}
+
+### Delete student
+DELETE localhost:8080/student/delete/371866d4-3d54-472a-a905-023c4408d025
