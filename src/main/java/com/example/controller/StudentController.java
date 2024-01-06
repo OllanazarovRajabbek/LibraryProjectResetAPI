@@ -1,86 +1,74 @@
 package com.example.controller;
 
 import com.example.DTO.StudentDTO;
+import com.example.exceptions.AppBadException;
+import com.example.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/student")
 public class StudentController {
     private List<StudentDTO> studentList = new LinkedList<>();
+    @Autowired
+    private StudentService studentService;
 
-    public StudentController() {
-        StudentDTO student1 = new StudentDTO();
-        student1.setId(UUID.randomUUID().toString());
-        student1.setName("Ali");
-        student1.setSurname("Aliyev");
-        student1.setPhone("999999");
-        student1.setCreatedDate(LocalDate.now());
-        studentList.add(student1);
-
-        StudentDTO student2 = new StudentDTO();
-        student2.setId(UUID.randomUUID().toString());
-        student2.setName("Vali");
-        student2.setSurname("Valiyev");
-        student2.setPhone("0000000");
-        student2.setCreatedDate(LocalDate.now());
-        studentList.add(student2);
-
-        StudentDTO student3 = new StudentDTO();
-        student3.setId(UUID.randomUUID().toString());
-        student3.setName("Rasul");
-        student3.setSurname("Rasulov");
-        student3.setPhone("222222");
-        student3.setCreatedDate(LocalDate.now());
-        studentList.add(student3);
-    }
-
-    @PostMapping("/create")
-    public Boolean createdStudent(@RequestBody StudentDTO student) {
-        student.setId(UUID.randomUUID().toString());
-        student.setCreatedDate(LocalDate.now());
-        studentList.add(student);
-        return true;
-    }
-
-    @GetMapping("/all")
-    public List<StudentDTO> getAll() {
-        return studentList;
-    }
-
-    @GetMapping("/{id}")
-    public StudentDTO getId(@PathVariable("id") String id) {
-        for (StudentDTO student : studentList) {
-            if (student != null) {
-                if (student.getId().equals(id)) {
-                    return student;
-                }
-            }
+    @PostMapping("")  //POST /student
+    public ResponseEntity<?> createdStudent(@RequestBody StudentDTO student) {
+        try {
+            studentService.create(student);
+        } catch (AppBadException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return null;
+//        ResponseEntity<?> response = new ResponseEntity<>(true, HttpStatus.OK);
+        return ResponseEntity.ok(true); //200
     }
 
-    @PutMapping("/update/{id}")   //PUT
-    public Boolean updateBook(@RequestBody StudentDTO student, @PathVariable("id") String id) {
-        for (StudentDTO studentDTO : studentList) {
-            if (studentDTO != null) {
-                if (studentDTO.getId().equals(id)) {
-                    studentDTO.setName(student.getName());
-                    studentDTO.setSurname(student.getSurname());
-                    studentDTO.setPhone(student.getPhone());
-                    return true;
-                }
-            }
+    @GetMapping("")    //GET /student
+    public ResponseEntity<List<StudentDTO>> getAll() {
+        return ResponseEntity.ok(studentService.getAll());
+    }
+
+    @GetMapping("/{id}")   //GET /student/id
+    public ResponseEntity<?> getId(@PathVariable("id") String id) {
+        try {
+            StudentDTO student = studentService.getById(id);
+            return ResponseEntity.ok(student);
+        } catch (AppBadException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return false;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public Boolean deleteStudent(@PathVariable("id") String id) {
-        return studentList.removeIf(studentDTO -> studentDTO.getId().equals(id));
+    @PutMapping("/{id}")   //PUT /student/id
+    public ResponseEntity<?> updateBook(@RequestBody StudentDTO student, @PathVariable("id") String id) {
+        try {
+            return ResponseEntity.ok(studentService.update(id, student));
+        } catch (AppBadException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    @DeleteMapping("/{id}")  //DELETE /student/id
+    public ResponseEntity<Boolean> deleteStudent(@PathVariable("id") String id) {
+        return ResponseEntity.ok(studentService.delete(id));
+    }
+
+
+    @GetMapping("/search/{name}/{surname}")
+    public ResponseEntity<List<StudentDTO>> filter(@PathVariable(value = "name") String name,
+                                                   @PathVariable(value = "surname") String surname) {
+        return ResponseEntity.ok(studentService.search(name,surname));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<StudentDTO>> search(@RequestParam(value = "name", required = false) String name,
+                                                    @RequestParam(value = "surname", defaultValue = "o") String surname) {
+       return ResponseEntity.ok(studentService.search(name,surname));
+    }
+
+
 }

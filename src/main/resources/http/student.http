@@ -26,3 +26,9 @@ Content-Type: application/json
 
 ### Delete student
 DELETE localhost:8080/student/delete/371866d4-3d54-472a-a905-023c4408d025
+
+### Search student
+GET localhost:8080/student/filter/al/o
+
+### Search
+GET localhost:8080/student/search?name=al&surname=o
